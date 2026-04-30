@@ -75,5 +75,21 @@ crashlytics-build.properties
 # Superpowers
 .superpowers/
 
-# Photon
-Assets/Photon/PhotonUnityNetworking/Resources/PhotonServerSettings.asset
+# Photon (에셋스토어 패키지 — 각자 임포트)
+Assets/Photon/
+My project/Assets/Photon/
+Photon/
+
+# Photon 서버 설정 (App ID 포함)
+PhotonServerSettings.asset
+
+# 환경변수 파일
+.env
+*.env
+
+# 스크린샷/이미지
+*.png
+
+# XR 로컬 설정 (각자 환경에 맞게 생성됨)
+Assets/XR/
+My project/Assets/XR/
