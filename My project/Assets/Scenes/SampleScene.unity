@@ -2891,7 +2891,7 @@ Transform:
   m_GameObject: {fileID: 417024209}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.574265, y: -1.2100167, z: -9.227992}
+  m_LocalPosition: {x: -2.04, y: 0.44, z: 1.66}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9447,7 +9447,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   triggerAction: {fileID: 83097790271614945, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  bulletTrail: {fileID: 0}
+  bulletColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &1255638673
 GameObject:
   m_ObjectHideFlags: 0
@@ -12723,7 +12723,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 4.959117e-39, y: 2.2026165e-19, z: 2.2e-44, w: 5.326459e-39}
+  m_BoundingSphereOverride: {x: 0, y: 2.87e-42, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
