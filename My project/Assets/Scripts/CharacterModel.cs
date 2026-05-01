@@ -23,12 +23,24 @@ public class CharacterModel : MonoBehaviour
     [SerializeField] private Color characterColor = new Color(0.45f, 0.55f, 0.65f);
     [SerializeField] private Color skinColor = new Color(0.95f, 0.8f, 0.7f);
 
+    [Header("Visual Model")]
+    [SerializeField] private GameObject visualPrefab;
+    [SerializeField] private bool hidePlaceholderRenderersWhenUsingVisual = true;
+    [SerializeField] private bool hideVisualForLocalPlayer = true;
+    [SerializeField] private float visualReferenceHeight = 1.7f;
+    [SerializeField] private Vector3 visualOffset = Vector3.zero;
+    [SerializeField] private Vector3 visualEulerOffset = Vector3.zero;
+
+    private Transform visualRoot;
+
     private void Awake()
     {
         if (autoGeneratePlaceholder)
         {
             GeneratePlaceholder();
         }
+
+        CreateVisualModel();
     }
 
     private void GeneratePlaceholder()
@@ -80,6 +92,48 @@ public class CharacterModel : MonoBehaviour
         rightArm = CreateArm("RightArm_Placeholder", characterColor);
     }
 
+    private void CreateVisualModel()
+    {
+        visualRoot = FindExistingVisualRoot();
+        if (visualRoot != null)
+        {
+            if (hidePlaceholderRenderersWhenUsingVisual)
+            {
+                SetPlaceholderRenderersVisible(false);
+            }
+
+            return;
+        }
+
+        if (visualPrefab == null) return;
+
+        GameObject visualObj = Instantiate(visualPrefab, transform);
+        visualObj.name = visualPrefab.name + "_Visual";
+        visualRoot = visualObj.transform;
+        visualRoot.localPosition = visualOffset;
+        visualRoot.localRotation = Quaternion.Euler(visualEulerOffset);
+        visualRoot.localScale = Vector3.one;
+
+        if (hidePlaceholderRenderersWhenUsingVisual)
+        {
+            SetPlaceholderRenderersVisible(false);
+        }
+    }
+
+    private Transform FindExistingVisualRoot()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (child.GetComponentInChildren<SkinnedMeshRenderer>(true) != null)
+            {
+                return child;
+            }
+        }
+
+        return null;
+    }
+
     private Transform CreateArm(string armName, Color color)
     {
         GameObject arm = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -100,6 +154,55 @@ public class CharacterModel : MonoBehaviour
         {
             var renderer = head.GetComponent<Renderer>();
             if (renderer != null) renderer.enabled = false;
+        }
+
+        if (hideVisualForLocalPlayer)
+        {
+            SetVisualVisible(false);
+        }
+    }
+
+    public void UpdateVisualPose(Vector3 rootPosition, float yawDegrees)
+    {
+        if (visualRoot == null || head == null) return;
+
+        float height = Mathf.Max(0.1f, head.position.y - rootPosition.y);
+        float scale = visualReferenceHeight > 0.01f ? height / visualReferenceHeight : 1f;
+
+        visualRoot.position = rootPosition + visualOffset;
+        visualRoot.rotation = Quaternion.Euler(0f, yawDegrees, 0f) * Quaternion.Euler(visualEulerOffset);
+        visualRoot.localScale = Vector3.one * scale;
+    }
+
+    private void SetVisualVisible(bool isVisible)
+    {
+        if (visualRoot == null) return;
+
+        var renderers = visualRoot.GetComponentsInChildren<Renderer>(true);
+        foreach (var visualRenderer in renderers)
+        {
+            visualRenderer.enabled = isVisible;
+        }
+    }
+
+    private void SetPlaceholderRenderersVisible(bool isVisible)
+    {
+        SetRendererVisible(head, isVisible);
+        SetRendererVisible(body, isVisible);
+        SetRendererVisible(leftHand, isVisible);
+        SetRendererVisible(rightHand, isVisible);
+        SetRendererVisible(leftArm, isVisible);
+        SetRendererVisible(rightArm, isVisible);
+    }
+
+    private void SetRendererVisible(Transform target, bool isVisible)
+    {
+        if (target == null) return;
+
+        var renderers = target.GetComponentsInChildren<Renderer>(true);
+        foreach (var targetRenderer in renderers)
+        {
+            targetRenderer.enabled = isVisible;
         }
     }
 

@@ -102,6 +102,7 @@ public class PlayerAvatar : MonoBehaviourPun, IPunObservable
 
         // 5. 팔: 어깨~손 사이를 동적으로 연결
         FitArms();
+        UpdateVisualModel();
     }
 
     /// <summary>
@@ -196,6 +197,14 @@ public class PlayerAvatar : MonoBehaviourPun, IPunObservable
         // 몸통도 머리 따라감 + 다리까지 늘어남
         FitBodyToHeight();
         FitArms();
+        UpdateVisualModel();
+    }
+
+    private void UpdateVisualModel()
+    {
+        if (model.head == null) return;
+
+        model.UpdateVisualPose(transform.position, model.head.eulerAngles.y);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
