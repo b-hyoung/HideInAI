@@ -6,8 +6,8 @@ using UnityEngine;
 /// </summary>
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private int enemyCount = 5;
-    [SerializeField] private float spawnRadius = 8f;
+    [SerializeField] private int enemyCount = 20;
+    [SerializeField] private float spawnRadius = 14f;
     [SerializeField] private Color enemyColor = new Color(0.2f, 0.7f, 0.3f);
 
     private void Start()
@@ -67,8 +67,9 @@ public class EnemySpawner : MonoBehaviour
         ApplyColor(rightArm, enemyColor);
         Destroy(rightArm.GetComponent<Collider>());
 
-        // 몸통에 EnemyHealth 부착 (피격 처리는 root에서 GetComponentInParent로 잡힘)
+        // 몸통에 EnemyHealth + AI 부착
         root.AddComponent<EnemyHealth>();
+        root.AddComponent<EnemyAI>();
 
         // 랜덤 방향 회전
         root.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
