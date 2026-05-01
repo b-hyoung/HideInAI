@@ -59,5 +59,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log($"방 입장 성공! 현재 인원: {PhotonNetwork.CurrentRoom.PlayerCount}명");
+        SpawnPlayerAvatar();
+    }
+
+    private void SpawnPlayerAvatar()
+    {
+        // 랜덤 스폰 위치 (반경 3m 안)
+        Vector2 randomCircle = Random.insideUnitCircle * 3f;
+        Vector3 spawnPos = new Vector3(randomCircle.x, 0, randomCircle.y);
+
+        // Resources/PlayerAvatar.prefab 인스턴스 생성 (Photon 자동 동기화)
+        GameObject avatar = PhotonNetwork.Instantiate("PlayerAvatar", spawnPos, Quaternion.identity);
+        if (avatar == null)
+        {
+            Debug.LogError("[NetworkManager] PlayerAvatar 프리팹을 Resources에서 찾을 수 없음. Assets/Resources/PlayerAvatar.prefab 만들었나요?");
+        }
+        else
+        {
+            Debug.Log($"[NetworkManager] PlayerAvatar 스폰됨: {spawnPos}");
+        }
     }
 }
