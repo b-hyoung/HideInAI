@@ -146,6 +146,7 @@ public class Gun : MonoBehaviourPun
 
     private void TryFire()
     {
+        if (grabInteractable == null || !grabInteractable.isSelected) return;
         if (Time.time - lastFireTime < fireCooldown) return;
         if (requireChambering && !chambered) return;
         if (photonView != null && PhotonNetwork.IsConnected && !photonView.IsMine) return;
