@@ -2,7 +2,9 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Filtering;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class Gun : MonoBehaviourPun
 {
@@ -50,6 +52,23 @@ public class Gun : MonoBehaviourPun
         if (muzzle == null) muzzle = transform;
         grabInteractable = GetComponent<XRGrabInteractable>();
         chambered = !requireChambering;
+
+        if (grabInteractable != null)
+        {
+            grabInteractable.selectFilters.Add(new NoStealFilter(grabInteractable));
+        }
+    }
+
+    private class NoStealFilter : IXRSelectFilter
+    {
+        private readonly XRGrabInteractable target;
+        public NoStealFilter(XRGrabInteractable t) { target = t; }
+        public bool canProcess => true;
+        public bool Process(IXRSelectInteractor interactor, IXRSelectInteractable interactable)
+        {
+            if (target.interactorsSelecting.Count == 0) return true;
+            return target.interactorsSelecting.Contains(interactor);
+        }
     }
 
     public void ChamberRound()
