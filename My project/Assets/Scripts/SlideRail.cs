@@ -43,10 +43,12 @@ public class SlideRail : MonoBehaviour
         grab.trackPosition = false;
         grab.trackRotation = false;
         grab.throwOnDetach = false;
+        grab.movementType = XRBaseInteractable.MovementType.Kinematic;
 
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
         rb.isKinematic = true;
+        rb.interpolation = RigidbodyInterpolation.None;
     }
 
     private void Start()
