@@ -19,6 +19,10 @@ public class Gun : MonoBehaviour
 
     [Header("사운드")]
     [SerializeField] private AudioClip gunShotClip;
+    [Range(0f, 1f)]
+    [SerializeField] private float spatialBlend = 1f;
+    [SerializeField] private float minDistance = 1f;
+    [SerializeField] private float maxDistance = 50f;
 
     [Header("탄피 배출")]
     [SerializeField] private GameObject shellPrefab;
@@ -45,7 +49,11 @@ public class Gun : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 0f;
+        audioSource.spatialBlend = spatialBlend;
+        audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
+        audioSource.minDistance = minDistance;
+        audioSource.maxDistance = maxDistance;
+        audioSource.dopplerLevel = 0f;
         audioSource.volume = 1f;
 
         if (gunShotClip == null) gunShotClip = CreateGunShotClip();
