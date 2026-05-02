@@ -17,8 +17,8 @@ public class SlideRail : MonoBehaviour
 
     [Header("레일 제약 (로컬 축)")]
     [SerializeField] private Vector3 railDirection = new Vector3(0f, 0f, -1f);
-    [SerializeField] private float maxPullDistance = 0.04f;
-    [SerializeField] private float chamberThreshold = 0.025f;
+    [SerializeField] private float maxPullDistance = 0.08f;
+    [SerializeField] private float chamberThreshold = 0.04f;
 
     [Header("스프링 / 자동 반동")]
     [SerializeField] private float springSpeed = 0.6f;
