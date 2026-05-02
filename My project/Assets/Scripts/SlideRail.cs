@@ -33,7 +33,8 @@ public class SlideRail : MonoBehaviour
     private Vector3 restLocalPos;
     private bool grabbed;
     private Transform interactorTransform;
-    private Vector3 grabOffsetLocal;
+    private Vector3 grabStartControllerWorld;
+    private Vector3 grabStartSlideLocal;
     private Coroutine autoRecoilCoroutine;
     private bool captured;
 
@@ -83,11 +84,8 @@ public class SlideRail : MonoBehaviour
         grabbed = true;
         interactorTransform = args.interactorObject.transform;
 
-        if (transform.parent != null)
-        {
-            Vector3 controllerLocal = transform.parent.InverseTransformPoint(interactorTransform.position);
-            grabOffsetLocal = transform.localPosition - controllerLocal;
-        }
+        grabStartControllerWorld = interactorTransform.position;
+        grabStartSlideLocal = transform.localPosition;
 
         if (autoRecoilCoroutine != null)
         {
@@ -154,8 +152,9 @@ public class SlideRail : MonoBehaviour
 
         if (grabbed && interactorTransform != null && transform.parent != null)
         {
-            Vector3 controllerLocal = transform.parent.InverseTransformPoint(interactorTransform.position);
-            Vector3 desiredLocal = controllerLocal + grabOffsetLocal;
+            Vector3 worldDelta = interactorTransform.position - grabStartControllerWorld;
+            Vector3 localDelta = transform.parent.InverseTransformVector(worldDelta);
+            Vector3 desiredLocal = grabStartSlideLocal + localDelta;
 
             float scaleZ = Mathf.Max(0.0001f, Mathf.Abs(transform.parent.lossyScale.z));
             float maxLocal = maxPullDistance / scaleZ;
