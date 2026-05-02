@@ -15,10 +15,12 @@ public class SlideRail : MonoBehaviour
     [Header("Gun 참조")]
     [SerializeField] private Gun gun;
 
-    [Header("레일 제약 (로컬 축)")]
+    [Header("이동 제약")]
     [SerializeField] private Vector3 railDirection = new Vector3(0f, 0f, -1f);
     [SerializeField] private float maxPullDistance = 0.08f;
     [SerializeField] private float chamberThreshold = 0.04f;
+    [Range(1f, 30f)]
+    [SerializeField] private float followSpeed = 12f;
 
     [Header("스프링 / 자동 반동")]
     [SerializeField] private float springSpeed = 0.6f;
@@ -100,8 +102,10 @@ public class SlideRail : MonoBehaviour
         interactorTransform = null;
 
         float scaleZ = transform.parent != null ? Mathf.Max(0.0001f, Mathf.Abs(transform.parent.lossyScale.z)) : 1f;
-        float pulledLocal = Vector3.Distance(transform.localPosition, restLocalPos);
-        float pulledWorld = pulledLocal * scaleZ;
+        Vector3 dir = railDirection.normalized;
+        Vector3 offset = transform.localPosition - restLocalPos;
+        float pulledAlongRail = Vector3.Dot(offset, dir);
+        float pulledWorld = pulledAlongRail * scaleZ;
         if (pulledWorld >= chamberThreshold && gun != null)
         {
             gun.ChamberRound();
@@ -152,13 +156,18 @@ public class SlideRail : MonoBehaviour
         {
             Vector3 controllerLocal = transform.parent.InverseTransformPoint(interactorTransform.position);
             Vector3 desiredLocal = controllerLocal + grabOffsetLocal;
-            Vector3 dir = railDirection.normalized;
+
             float scaleZ = Mathf.Max(0.0001f, Mathf.Abs(transform.parent.lossyScale.z));
             float maxLocal = maxPullDistance / scaleZ;
-            Vector3 offset = desiredLocal - restLocalPos;
-            float dist = Vector3.Dot(offset, dir);
-            dist = Mathf.Clamp(dist, 0f, maxLocal);
-            transform.localPosition = restLocalPos + dir * dist;
+
+            Vector3 fromRest = desiredLocal - restLocalPos;
+            if (fromRest.magnitude > maxLocal)
+            {
+                fromRest = fromRest.normalized * maxLocal;
+            }
+            Vector3 target = restLocalPos + fromRest;
+
+            transform.localPosition = Vector3.Lerp(transform.localPosition, target, followSpeed * Time.deltaTime);
         }
         else if (autoRecoilCoroutine == null)
         {
