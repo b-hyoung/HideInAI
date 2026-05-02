@@ -1,9 +1,10 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-public class Gun : MonoBehaviour
+public class Gun : MonoBehaviourPun
 {
     [Header("발사 설정")]
     [SerializeField] private Transform muzzle;
@@ -108,6 +109,11 @@ public class Gun : MonoBehaviour
 
     private void OnGrabbed(SelectEnterEventArgs args)
     {
+        if (photonView != null && PhotonNetwork.IsConnected && !photonView.IsMine)
+        {
+            photonView.RequestOwnership();
+        }
+
         Transform t = args.interactorObject.transform;
         while (t != null)
         {
@@ -141,10 +147,55 @@ public class Gun : MonoBehaviour
     private void TryFire()
     {
         if (Time.time - lastFireTime < fireCooldown) return;
+        if (requireChambering && !chambered) return;
+        if (photonView != null && PhotonNetwork.IsConnected && !photonView.IsMine) return;
         lastFireTime = Time.time;
 
-        if (requireChambering && !chambered) return;
+        Vector3 origin = muzzle.position;
+        Vector3 dir = muzzle.forward;
 
+        FireLocal(origin, dir, applyDamage: true);
+
+        if (photonView != null && PhotonNetwork.IsConnected)
+        {
+            photonView.RPC(nameof(RPC_FireRemote), RpcTarget.Others, origin, dir);
+        }
+    }
+
+    [PunRPC]
+    private void RPC_FireRemote(Vector3 origin, Vector3 dir)
+    {
+        FireLocal(origin, dir, applyDamage: false);
+    }
+
+    private void FireLocal(Vector3 origin, Vector3 dir, bool applyDamage)
+    {
+        PlayFireVisuals();
+
+        Vector3 endPoint = origin + dir * fireRange;
+
+        if (Physics.Raycast(origin, dir, out RaycastHit hit, fireRange, hitLayer))
+        {
+            endPoint = hit.point;
+
+            if (applyDamage)
+            {
+                EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(1);
+                    Debug.Log($"[Gun] 명중: {hit.collider.name}");
+                }
+            }
+
+            CreateImpactEffect(hit.point);
+        }
+
+        CreateBulletTrail(origin, endPoint);
+    }
+
+    private void PlayFireVisuals()
+    {
         if (audioSource != null && gunShotClip != null) audioSource.PlayOneShot(gunShotClip);
 
         if (recoilParts != null)
@@ -172,26 +223,6 @@ public class Gun : MonoBehaviour
         }
 
         EjectShell();
-
-        Vector3 origin = muzzle.position;
-        Vector3 dir = muzzle.forward;
-        Vector3 endPoint = origin + dir * fireRange;
-
-        if (Physics.Raycast(origin, dir, out RaycastHit hit, fireRange, hitLayer))
-        {
-            endPoint = hit.point;
-
-            EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(1);
-                Debug.Log($"[Gun] 명중: {hit.collider.name}");
-            }
-
-            CreateImpactEffect(hit.point);
-        }
-
-        CreateBulletTrail(origin, endPoint);
     }
 
     private void EjectShell()
