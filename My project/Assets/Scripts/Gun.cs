@@ -24,6 +24,9 @@ public class Gun : MonoBehaviour
     [SerializeField] private float minDistance = 1f;
     [SerializeField] private float maxDistance = 50f;
 
+    [Header("장전")]
+    [SerializeField] private bool requireChambering = false;
+
     [Header("탄피 배출")]
     [SerializeField] private GameObject shellPrefab;
     [SerializeField] private Transform shellEjectPoint;
@@ -38,11 +41,25 @@ public class Gun : MonoBehaviour
     private SlideRecoil[] recoilParts;
     private RecoilKick[] kickParts;
     private TriggerPull[] triggerParts;
+    private bool chambered;
 
     private void Awake()
     {
         if (muzzle == null) muzzle = transform;
         grabInteractable = GetComponent<XRGrabInteractable>();
+        chambered = !requireChambering;
+    }
+
+    public void ChamberRound()
+    {
+        chambered = true;
+        if (recoilParts != null)
+        {
+            for (int i = 0; i < recoilParts.Length; i++)
+            {
+                if (recoilParts[i] != null) recoilParts[i].Recoil();
+            }
+        }
     }
 
     private void Start()
@@ -125,6 +142,8 @@ public class Gun : MonoBehaviour
     {
         if (Time.time - lastFireTime < fireCooldown) return;
         lastFireTime = Time.time;
+
+        if (requireChambering && !chambered) return;
 
         if (audioSource != null && gunShotClip != null) audioSource.PlayOneShot(gunShotClip);
 
