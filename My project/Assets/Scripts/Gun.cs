@@ -20,6 +20,13 @@ public class Gun : MonoBehaviour
     [Header("사운드")]
     [SerializeField] private AudioClip gunShotClip;
 
+    [Header("탄피 배출")]
+    [SerializeField] private GameObject shellPrefab;
+    [SerializeField] private Transform shellEjectPoint;
+    [SerializeField] private float shellEjectForce = 1.5f;
+    [SerializeField] private float shellEjectUpForce = 0.4f;
+    [SerializeField] private float shellLifetime = 3f;
+
     private float lastFireTime;
     private AudioSource audioSource;
     private XRGrabInteractable grabInteractable;
@@ -117,6 +124,8 @@ public class Gun : MonoBehaviour
             }
         }
 
+        EjectShell();
+
         Vector3 origin = muzzle.position;
         Vector3 dir = muzzle.forward;
         Vector3 endPoint = origin + dir * fireRange;
@@ -136,6 +145,23 @@ public class Gun : MonoBehaviour
         }
 
         CreateBulletTrail(origin, endPoint);
+    }
+
+    private void EjectShell()
+    {
+        if (shellPrefab == null) return;
+        Transform pt = shellEjectPoint != null ? shellEjectPoint : muzzle;
+        if (pt == null) return;
+
+        GameObject shell = Instantiate(shellPrefab, pt.position, pt.rotation);
+        Rigidbody rb = shell.GetComponent<Rigidbody>();
+        if (rb == null) rb = shell.AddComponent<Rigidbody>();
+
+        Vector3 force = pt.right * shellEjectForce + pt.up * shellEjectUpForce;
+        rb.AddForce(force, ForceMode.Impulse);
+        rb.AddTorque(Random.insideUnitSphere * 0.5f, ForceMode.Impulse);
+
+        Destroy(shell, shellLifetime);
     }
 
     private void CreateBulletTrail(Vector3 start, Vector3 end)
