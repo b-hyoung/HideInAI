@@ -36,6 +36,7 @@ public class Gun : MonoBehaviourPun
     [SerializeField] private float shellEjectForce = 1.5f;
     [SerializeField] private float shellEjectUpForce = 0.4f;
     [SerializeField] private float shellLifetime = 3f;
+    [SerializeField] private float shellScale = 0.25f;
 
     private float lastFireTime;
     private AudioSource audioSource;
@@ -255,6 +256,7 @@ public class Gun : MonoBehaviourPun
         if (pt == null) return;
 
         GameObject shell = Instantiate(shellPrefab, pt.position, pt.rotation);
+        shell.transform.localScale *= shellScale;
         Rigidbody rb = shell.GetComponent<Rigidbody>();
         if (rb == null) rb = shell.AddComponent<Rigidbody>();
 
