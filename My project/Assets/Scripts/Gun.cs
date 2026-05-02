@@ -32,6 +32,7 @@ public class Gun : MonoBehaviour
     private XRGrabInteractable grabInteractable;
     private GameObject hiddenHandVisual;
     private SlideRecoil[] recoilParts;
+    private RecoilKick[] kickParts;
 
     private void Awake()
     {
@@ -50,6 +51,7 @@ public class Gun : MonoBehaviour
         if (gunShotClip == null) gunShotClip = CreateGunShotClip();
 
         recoilParts = GetComponentsInChildren<SlideRecoil>(true);
+        kickParts = GetComponentsInChildren<RecoilKick>(true);
     }
 
     private void OnEnable()
@@ -121,6 +123,14 @@ public class Gun : MonoBehaviour
             for (int i = 0; i < recoilParts.Length; i++)
             {
                 if (recoilParts[i] != null) recoilParts[i].Recoil();
+            }
+        }
+
+        if (kickParts != null)
+        {
+            for (int i = 0; i < kickParts.Length; i++)
+            {
+                if (kickParts[i] != null) kickParts[i].Kick();
             }
         }
 
