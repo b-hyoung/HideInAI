@@ -40,6 +40,7 @@ public class Gun : MonoBehaviourPun
     private XRGrabInteractable grabInteractable;
     private GameObject hiddenHandVisual;
     private SlideRecoil[] recoilParts;
+    private SlideRail[] slideRails;
     private RecoilKick[] kickParts;
     private TriggerPull[] triggerParts;
     private bool chambered;
@@ -54,13 +55,6 @@ public class Gun : MonoBehaviourPun
     public void ChamberRound()
     {
         chambered = true;
-        if (recoilParts != null)
-        {
-            for (int i = 0; i < recoilParts.Length; i++)
-            {
-                if (recoilParts[i] != null) recoilParts[i].Recoil();
-            }
-        }
     }
 
     private void Start()
@@ -78,6 +72,7 @@ public class Gun : MonoBehaviourPun
         if (gunShotClip == null) gunShotClip = CreateGunShotClip();
 
         recoilParts = GetComponentsInChildren<SlideRecoil>(true);
+        slideRails = GetComponentsInChildren<SlideRail>(true);
         kickParts = GetComponentsInChildren<RecoilKick>(true);
         triggerParts = GetComponentsInChildren<TriggerPull>(true);
     }
@@ -204,6 +199,14 @@ public class Gun : MonoBehaviourPun
             for (int i = 0; i < recoilParts.Length; i++)
             {
                 if (recoilParts[i] != null) recoilParts[i].Recoil();
+            }
+        }
+
+        if (slideRails != null)
+        {
+            for (int i = 0; i < slideRails.Length; i++)
+            {
+                if (slideRails[i] != null) slideRails[i].Recoil();
             }
         }
 
