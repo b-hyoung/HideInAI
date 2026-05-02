@@ -37,6 +37,7 @@ public class Gun : MonoBehaviour
     private GameObject hiddenHandVisual;
     private SlideRecoil[] recoilParts;
     private RecoilKick[] kickParts;
+    private TriggerPull[] triggerParts;
 
     private void Awake()
     {
@@ -60,6 +61,7 @@ public class Gun : MonoBehaviour
 
         recoilParts = GetComponentsInChildren<SlideRecoil>(true);
         kickParts = GetComponentsInChildren<RecoilKick>(true);
+        triggerParts = GetComponentsInChildren<TriggerPull>(true);
     }
 
     private void OnEnable()
@@ -139,6 +141,14 @@ public class Gun : MonoBehaviour
             for (int i = 0; i < kickParts.Length; i++)
             {
                 if (kickParts[i] != null) kickParts[i].Kick();
+            }
+        }
+
+        if (triggerParts != null)
+        {
+            for (int i = 0; i < triggerParts.Length; i++)
+            {
+                if (triggerParts[i] != null) triggerParts[i].Pull();
             }
         }
 
