@@ -40,11 +40,11 @@ public class PistolMecanic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var LT = controller.actionMaps[5].actions[2].ReadValue<float>();
+        var RT = controller.actionMaps[5].actions[2].ReadValue<float>();
         if(delay > 0) delay -= time*Time.deltaTime;
         if(delay < 0) delay = 0;
 
-        if (LT >= 0.5f){
+        if (RT >= 0.5f){
             if(delay == 0){
                 pistol.SetBool("trigger", true);
                 audioSource.Play();
