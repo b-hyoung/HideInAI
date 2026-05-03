@@ -1,8 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
+// 참조용 보존 — 옛 Gun.cs 시스템에서 사용했던 트리거 회전 컴포넌트.
+// 새 PistolMecanic 시스템에서는 직접 사용하지 않음.
 [DisallowMultipleComponent]
-public class TriggerPull : MonoBehaviour
+public class Reference_TriggerFull : MonoBehaviour
 {
     [Header("트리거 당김 설정")]
     [SerializeField] private Vector3 pullEuler = new Vector3(-15f, 0f, 0f);
