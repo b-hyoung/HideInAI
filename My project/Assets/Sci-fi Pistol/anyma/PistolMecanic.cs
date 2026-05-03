@@ -11,6 +11,7 @@ public class PistolMecanic : MonoBehaviour
 
     public Animator pistol;
     public InputActionAsset controller;
+    public Animator trigger;
     
     private AudioSource audioSource;
     public float rpm;
@@ -41,7 +42,9 @@ public class PistolMecanic : MonoBehaviour
     void Update()
     {
         var RT = controller.actionMaps[5].actions[2].ReadValue<float>();
-        if(delay > 0) delay -= time*Time.deltaTime;
+        var triggerValue = controller.actionMaps[5].actions[2].ReadValue<float>();
+        trigger.SetFloat("trigger", triggerValue);
+        if (delay > 0) delay -= time*Time.deltaTime;
         if(delay < 0) delay = 0;
 
         if (RT >= 0.5f){

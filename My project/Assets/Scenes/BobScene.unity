@@ -4653,7 +4653,7 @@ Transform:
   m_GameObject: {fileID: 4779411254856696715}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 2.341}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4687,6 +4687,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pistol: {fileID: 5267014303240460595}
   controller: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  trigger: {fileID: 5661738207298359869}
   rpm: 20
   delay: 0
   time: 80
